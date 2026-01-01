@@ -11,7 +11,6 @@ export default function LoginPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    //
 
     const res = await signIn("credentials", {
       email: form.email,
