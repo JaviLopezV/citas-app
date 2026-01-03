@@ -1,62 +1,153 @@
 "use client";
+
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Container,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
+  InputAdornment,
+} from "@mui/material";
+import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
-    const res = await signIn("credentials", {
-      email: form.email,
-      password: form.password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
 
-    if (res?.error) {
-      setError("Credenciales incorrectas");
-      return;
+      if (res?.error) {
+        setError("Credenciales incorrectas");
+        return;
+      }
+
+      router.push("/dashboard");
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/dashboard");
   }
 
   return (
-    <div className="container py-5" style={{ maxWidth: 520 }}>
-      <h1 className="mb-4">Iniciar sesión</h1>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        background:
+          "radial-gradient(1200px circle at 20% 10%, rgba(255,0,128,0.10), transparent 55%), radial-gradient(900px circle at 80% 30%, rgba(0,120,255,0.10), transparent 50%)",
+      }}
+    >
+      <Container maxWidth="sm">
+        <Card
+          elevation={0}
+          sx={{ border: "1px solid", borderColor: "divider" }}
+        >
+          <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+            <Stack spacing={2.5}>
+              <Stack spacing={0.5}>
+                <Typography variant="h5" fontWeight={800}>
+                  Iniciar sesión
+                </Typography>
+                <Typography color="text.secondary">
+                  Accede para continuar.
+                </Typography>
+              </Stack>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+              {error && <Alert severity="error">{error}</Alert>}
 
-      <form onSubmit={onSubmit} className="d-grid gap-3">
-        <input
-          className="form-control"
-          placeholder="Email"
-          type="email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-        />
-        <input
-          className="form-control"
-          placeholder="Password"
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          required
-        />
-        <button className="btn btn-primary" type="submit">
-          Entrar
-        </button>
+              <Box component="form" onSubmit={onSubmit}>
+                <Stack spacing={2}>
+                  <TextField
+                    label="Email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    required
+                    autoComplete="email"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <MailOutlineRoundedIcon />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  />
 
-        <a className="btn btn-link" href="/register">
-          No tengo cuenta → Registrarme
-        </a>
-      </form>
-    </div>
+                  <TextField
+                    label="Password"
+                    type="password"
+                    value={form.password}
+                    onChange={(e) =>
+                      setForm({ ...form, password: e.target.value })
+                    }
+                    required
+                    autoComplete="current-password"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockOutlinedIcon />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={loading}
+                    endIcon={
+                      loading ? (
+                        <CircularProgress size={18} color="inherit" />
+                      ) : (
+                        <ArrowForwardRoundedIcon />
+                      )
+                    }
+                  >
+                    {loading ? "Entrando…" : "Entrar"}
+                  </Button>
+
+                  <Divider />
+
+                  <Button component={Link} href="/register" variant="text">
+                    No tengo cuenta → Registrarme
+                  </Button>
+                </Stack>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Container>
+    </Box>
   );
 }

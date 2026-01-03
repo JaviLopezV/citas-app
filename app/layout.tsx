@@ -2,13 +2,20 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Providers } from "./providers";
+import MuiProvider from "./mui-provider";
+import { Providers } from "./providers"; // tu SessionProvider
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="es">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <MuiProvider>{children}</MuiProvider>
+        </Providers>
       </body>
     </html>
   );
