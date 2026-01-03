@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Box,
   Button,
@@ -12,6 +13,8 @@ import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 export default function AuthLanding() {
+  const t = useTranslations("auth");
+
   return (
     <Box
       sx={{
@@ -32,38 +35,33 @@ export default function AuthLanding() {
               <Stack direction="row" spacing={1.2} alignItems="center">
                 <FavoriteRoundedIcon fontSize="medium" />
                 <Typography variant="h5" fontWeight={800}>
-                  Bienvenido
+                  {t("title")}
                 </Typography>
               </Stack>
 
-              <Typography color="text.secondary">
-                Crea una cuenta o inicia sesión para empezar a descubrir
-                perfiles.
-              </Typography>
+              <Typography color="text.secondary">{t("subtitle")}</Typography>
 
               <Stack spacing={1.5} sx={{ pt: 1 }}>
-                <Button
-                  component={Link}
-                  href="/register"
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForwardRoundedIcon />}
-                >
-                  Crear cuenta
-                </Button>
+                <Link href="/register" style={{ textDecoration: "none" }}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowForwardRoundedIcon />}
+                  >
+                    {t("register")}
+                  </Button>
+                </Link>
 
-                <Button
-                  component={Link}
-                  href="/login"
-                  variant="outlined"
-                  size="large"
-                >
-                  Iniciar sesión
-                </Button>
+                <Link href="/login" style={{ textDecoration: "none" }}>
+                  <Button fullWidth variant="outlined" size="large">
+                    {t("login")}
+                  </Button>
+                </Link>
               </Stack>
 
               <Typography variant="caption" color="text.secondary">
-                Al continuar aceptas nuestras políticas (luego las añadimos).
+                {t("footnote")}
               </Typography>
             </Stack>
           </CardContent>

@@ -16,8 +16,10 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
+import { useTranslations } from "next-intl";
 
 export default async function DiscoverPage() {
+  const t = useTranslations("discover");
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth");
 
@@ -62,10 +64,10 @@ export default async function DiscoverPage() {
             <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
               <Stack spacing={1}>
                 <Typography variant="h5" fontWeight={800}>
-                  No hay más perfiles 😢
+                  {t("emptyTitle")}
                 </Typography>
                 <Typography color="text.secondary">
-                  Vuelve más tarde o ajusta tus filtros (lo añadimos luego).
+                  {t("emptySubtitle")}
                 </Typography>
               </Stack>
             </CardContent>
@@ -75,7 +77,7 @@ export default async function DiscoverPage() {
     );
   }
 
-  const displayName = user.name?.trim() || "Usuario";
+  const displayName = user.name?.trim() || t("defaultUser");
   const city = user.city?.trim();
   const gender = user.gender?.trim();
   const bio = user.bio?.trim();
@@ -125,7 +127,7 @@ export default async function DiscoverPage() {
               <Divider flexItem />
 
               <Typography color={bio ? "text.primary" : "text.secondary"}>
-                {bio || "Sin bio todavía."}
+                {bio || t("noBio")}
               </Typography>
 
               <Stack direction="row" spacing={2} sx={{ pt: 1 }} width="100%">
@@ -144,7 +146,7 @@ export default async function DiscoverPage() {
                     variant="outlined"
                     startIcon={<CloseRoundedIcon />}
                   >
-                    Pass
+                    {t("pass")}
                   </Button>
                 </Box>
 
@@ -164,7 +166,7 @@ export default async function DiscoverPage() {
                     variant="contained"
                     startIcon={<FavoriteRoundedIcon />}
                   >
-                    Like
+                    {t("like")}
                   </Button>
                 </Box>
               </Stack>

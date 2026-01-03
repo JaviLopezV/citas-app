@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import {
   Alert,
@@ -21,9 +21,14 @@ import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import { useTranslations } from "next-intl";
 
 export default function RegisterPage() {
+  const t = useTranslations("register");
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || "es";
+
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
@@ -44,14 +49,12 @@ export default function RegisterPage() {
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(
-          data?.error?.formErrors?.[0] ?? data?.error ?? "Error registrando"
-        );
+        setError(data?.error?.formErrors?.[0] ?? data?.error ?? "errorGeneric");
         return;
       }
 
-      setOk("Cuenta creada. Redirigiendo a iniciar sesión…");
-      setTimeout(() => router.push("/login"), 700);
+      setOk("successRedirect");
+      setTimeout(() => router.push(`/${locale}/login`), 700);
     } finally {
       setLoading(false);
     }
@@ -76,20 +79,18 @@ export default function RegisterPage() {
             <Stack spacing={2.5}>
               <Stack spacing={0.5}>
                 <Typography variant="h5" fontWeight={800}>
-                  Crear cuenta
+                  {t("title")}
                 </Typography>
-                <Typography color="text.secondary">
-                  Crea tu perfil y empieza a descubrir gente.
-                </Typography>
+                <Typography color="text.secondary">{t("subtitle")}</Typography>
               </Stack>
 
-              {error && <Alert severity="error">{error}</Alert>}
-              {ok && <Alert severity="success">{ok}</Alert>}
+              {error && <Alert severity="error">{t(error)}</Alert>}
+              {ok && <Alert severity="success">{t(ok)}</Alert>}
 
               <Box component="form" onSubmit={onSubmit}>
                 <Stack spacing={2}>
                   <TextField
-                    label="Nombre (opcional)"
+                    label={t("nameOptional")}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     autoComplete="name"
@@ -105,7 +106,7 @@ export default function RegisterPage() {
                   />
 
                   <TextField
-                    label="Email"
+                    label={t("email")}
                     type="email"
                     value={form.email}
                     onChange={(e) =>
@@ -125,7 +126,7 @@ export default function RegisterPage() {
                   />
 
                   <TextField
-                    label="Password (mín 8)"
+                    label={t("passwordMin")}
                     type="password"
                     value={form.password}
                     onChange={(e) =>
@@ -133,7 +134,7 @@ export default function RegisterPage() {
                     }
                     required
                     autoComplete="new-password"
-                    helperText="Usa al menos 8 caracteres."
+                    helperText={t("passwordHelp")}
                     slotProps={{
                       input: {
                         startAdornment: (
@@ -158,19 +159,23 @@ export default function RegisterPage() {
                       )
                     }
                   >
-                    {loading ? "Creando cuenta…" : "Registrarme"}
+                    {loading ? t("submitting") : t("submit")}
                   </Button>
 
                   <Divider />
 
-                  <Button component={Link} href="/login" variant="text">
-                    Ya tengo cuenta → Iniciar sesión
+                  <Button
+                    component={Link}
+                    href={`/${locale}/login`}
+                    variant="text"
+                  >
+                    {t("toLogin")}
                   </Button>
                 </Stack>
               </Box>
 
               <Typography variant="caption" color="text.secondary">
-                Al registrarte aceptas nuestras políticas (luego las añadimos).
+                {t("footnote")}
               </Typography>
             </Stack>
           </CardContent>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import {
   Alert,
@@ -21,9 +21,15 @@ import {
 import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const t = useTranslations("login");
+
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || "es";
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,11 +47,11 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        setError("Credenciales incorrectas");
+        setError("invalidCredentials");
         return;
       }
 
-      router.push("/dashboard");
+      router.push(`/${locale}/dashboard`);
     } finally {
       setLoading(false);
     }
@@ -70,19 +76,17 @@ export default function LoginPage() {
             <Stack spacing={2.5}>
               <Stack spacing={0.5}>
                 <Typography variant="h5" fontWeight={800}>
-                  Iniciar sesión
+                  {t("title")}
                 </Typography>
-                <Typography color="text.secondary">
-                  Accede para continuar.
-                </Typography>
+                <Typography color="text.secondary">{t("subtitle")}</Typography>
               </Stack>
 
-              {error && <Alert severity="error">{error}</Alert>}
+              {error && <Alert severity="error">{t(error)}</Alert>}
 
               <Box component="form" onSubmit={onSubmit}>
                 <Stack spacing={2}>
                   <TextField
-                    label="Email"
+                    label={t("email")}
                     type="email"
                     value={form.email}
                     onChange={(e) =>
@@ -102,7 +106,7 @@ export default function LoginPage() {
                   />
 
                   <TextField
-                    label="Password"
+                    label={t("password")}
                     type="password"
                     value={form.password}
                     onChange={(e) =>
@@ -134,13 +138,17 @@ export default function LoginPage() {
                       )
                     }
                   >
-                    {loading ? "Entrando…" : "Entrar"}
+                    {loading ? t("submitting") : t("submit")}
                   </Button>
 
                   <Divider />
 
-                  <Button component={Link} href="/register" variant="text">
-                    No tengo cuenta → Registrarme
+                  <Button
+                    component={Link}
+                    href={`/${locale}/register`}
+                    variant="text"
+                  >
+                    {t("toRegister")}
                   </Button>
                 </Stack>
               </Box>
